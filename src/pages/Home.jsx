@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+
+import { useSearchParams } from "react-router-dom";
 
 export const api = axios.create({
   baseURL: "https://jsonplaceholder.typicode.com",
 });
 
-// npm i react-router-dom
+// // npm i react-router-dom
 
 const Home = () => {
-  const [isLoading, setIsLoading] = useState(true);
   const [todos, setTodos] = useState([]);
+  const [params, setParams] = useSearchParams();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getData = async () => {
@@ -30,15 +32,39 @@ const Home = () => {
     getData();
   }, []);
 
+  const home = params.get("home") || "";
+
   return (
     <div>
-      {isLoading
+      {home}
+      home
+      <button
+        onClick={() => {
+          setParams((prevParams) => {
+            prevParams.set("home", "hello");
+            return prevParams;
+          });
+        }}
+      >
+        Set home data
+      </button>
+      <button
+        onClick={() => {
+          setParams((prevParams) => {
+            prevParams.set("new", "world");
+            return prevParams;
+          });
+        }}
+      >
+        Set new data
+      </button>
+      {/* {isLoading
         ? "loading"
         : todos.map((todo) => (
             <Link to={`/todo/${todo?.id}`} key={todo?.id}>
               {todo?.title}
             </Link>
-          ))}
+          ))} */}
     </div>
   );
 };

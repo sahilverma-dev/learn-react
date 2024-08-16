@@ -12,6 +12,9 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Todo from "./pages/Todo";
 import AuthLayout from "./components/layouts/AuthLayout";
+import About from "./pages/About";
+import Blog from "./pages/BLog";
+import Contact from "./pages/Contact";
 
 const router = () =>
   createBrowserRouter(
@@ -19,14 +22,12 @@ const router = () =>
       <Route element={<RootLayout />}>
         <Route element={<AuthLayout />}>
           <Route index element={<Home />} />
-          <Route path="todo/:id" element={<Todo />} />
-          <Route path="*" element={<NotFound />} />
-          {/* 
-          /contact
-          /about
-          /blog
-          */}
+          <Route path="todo" element={<Todo />} />
+          <Route path="about" element={<About />} />
+          <Route path="blog" element={<Blog />} />
+          <Route path="contact" element={<Contact />} />
         </Route>
+        <Route path="*" element={<NotFound />} />
         <Route path="login" element={<Login />} />
       </Route>
     )
