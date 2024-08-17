@@ -1,5 +1,18 @@
+import { useAuth } from "../hooks/useAuth";
+
 const Login = () => {
-  return <div>Login</div>;
+  const { loginUser } = useAuth();
+  return (
+    <div>
+      <button
+        onClick={() => {
+          loginUser("sahil");
+        }}
+      >
+        Login
+      </button>
+    </div>
+  );
 };
 
 export default Login;
