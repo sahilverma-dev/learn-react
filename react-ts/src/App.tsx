@@ -1,6 +1,7 @@
 // import { PropsWithChildren, ReactNode, useRef, useState } from "react";
 
-import Button from "./componetns/Button";
+import { useEffect } from "react";
+// import Button from "./componetns/Button";
 
 // type ClickEvent = React.MouseEvent<HTMLButtonElement, MouseEvent>;
 
@@ -75,12 +76,54 @@ import Button from "./componetns/Button";
 //   return <div>{children}</div>;
 // };
 
+import { useState } from "react";
+import axios from "axios";
+import { useAuth } from "./hooks/useAuth";
+const api = axios.create({
+  baseURL: "https://jsonplaceholder.typicode.com",
+});
+
+export type Todos = Todo[];
+
+export interface Todo {
+  userId: number;
+  id: number;
+  title: string;
+  completed: boolean;
+}
+
 const App = () => {
+  const [todos, setTodos] = useState<Todos>([]);
+
+  const { login } = useAuth();
+
+  useEffect(() => {
+    const getData = async () => {
+      const { data } = await api<Todos>({
+        url: "/todos",
+      });
+      setTodos(data);
+
+      console.log(data);
+    };
+
+    getData();
+  }, []);
   return (
     <div>
-      <Button className="asfasd" variant="secondary">
-        asfasdf
-      </Button>
+      <button
+        onClick={() => {
+          login({
+            email: "asdf",
+            name: "asfasd",
+          });
+        }}
+      >
+        login
+      </button>
+      {todos.map((item) => (
+        <div key={item.id}>{item.title}</div>
+      ))}
     </div>
   );
 };
