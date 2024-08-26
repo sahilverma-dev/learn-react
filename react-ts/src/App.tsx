@@ -1,6 +1,9 @@
 // import { PropsWithChildren, ReactNode, useRef, useState } from "react";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useStore } from "./hooks/useStore";
+import { Video, VideoResponse } from "./interfaces";
+import axios from "axios";
 // import Button from "./componetns/Button";
 
 // type ClickEvent = React.MouseEvent<HTMLButtonElement, MouseEvent>;
@@ -76,54 +79,146 @@ import { useEffect } from "react";
 //   return <div>{children}</div>;
 // };
 
-import { useState } from "react";
-import axios from "axios";
-import { useAuth } from "./hooks/useAuth";
-const api = axios.create({
-  baseURL: "https://jsonplaceholder.typicode.com",
-});
+// import { useState } from "react";
+// import axios from "axios";
+// import { useAuth } from "./hooks/useAuth";
+// const api = axios.create({
+//   baseURL: "https://jsonplaceholder.typicode.com",
+// });
 
-export type Todos = Todo[];
+// export type Todos = Todo[];
 
-export interface Todo {
-  userId: number;
-  id: number;
-  title: string;
-  completed: boolean;
-}
+// export interface Todo {
+//   userId: number;
+//   id: number;
+//   title: string;
+//   completed: boolean;
+// }
+
+// const App = () => {
+//   const [todos, setTodos] = useState<Todos>([]);
+
+//   const { login } = useAuth();
+
+//   useEffect(() => {
+//     const getData = async () => {
+//       const { data } = await api<Todos>({
+//         url: "/todos",
+//       });
+//       setTodos(data);
+
+//       console.log(data);
+//     };
+
+//     getData();
+//   }, []);
+//   return (
+//     <div>
+//       <button
+//         onClick={() => {
+//           login({
+//             email: "asdf",
+//             name: "asfasd",
+//           });
+//         }}
+//       >
+//         login
+//       </button>
+//       {todos.map((item) => (
+//         <div key={item.id}>{item.title}</div>
+//       ))}
+//     </div>
+//   );
+// };
+
+// export default App;
 
 const App = () => {
-  const [todos, setTodos] = useState<Todos>([]);
+  const { state, dispatch } = useStore();
 
-  const { login } = useAuth();
+  const [videos, setVideos] = useState<Video[]>([]);
+  const { user, theme, watchLater } = state;
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await api<Todos>({
-        url: "/todos",
-      });
-      setTodos(data);
-
-      console.log(data);
+      const { data } = await axios<VideoResponse>(
+        "https://api.freeapi.app/api/v1/public/youtube/videos?page=1&limit=10&query=javascript&sortBy=keep%20one%3A%20mostLiked%20%7C%20mostViewed%20%7C%20latest%20%7C%20oldest"
+      );
+      setVideos(data.data.data);
     };
 
     getData();
   }, []);
+
   return (
     <div>
+      {user ? user.name : "No user"}
+      {user ? (
+        <button
+          onClick={() => {
+            dispatch({
+              type: "LOGOUT",
+            });
+          }}
+        >
+          Logout
+        </button>
+      ) : (
+        <button
+          onClick={() => {
+            dispatch({
+              type: "LOGIN",
+              payload: {
+                user: {
+                  name: "Sahil",
+                },
+              },
+            });
+          }}
+        >
+          Login
+        </button>
+      )}
+
+      {theme}
+
       <button
         onClick={() => {
-          login({
-            email: "asdf",
-            name: "asfasd",
+          dispatch({
+            type: "TOGGLE_THEME",
           });
         }}
       >
-        login
+        Toggle Theme
       </button>
-      {todos.map((item) => (
-        <div key={item.id}>{item.title}</div>
+
+      {videos.map((video) => (
+        <div key={video.items.id}>
+          <button
+            onClick={() => {
+              dispatch({
+                type: "ADD_TO_WATCH_LATER",
+                payload: {
+                  video,
+                },
+              });
+            }}
+          >
+            Add To Watch Later
+          </button>
+          <img src={video.items.snippet.thumbnails.default.url} alt="" />
+        </div>
       ))}
+
+      <h1>Watch Later</h1>
+
+      {watchLater.length === 0
+        ? "no videos"
+        : watchLater.map((video) => (
+            <div key={video.items.id}>
+              <img src={video.items.snippet.thumbnails.default.url} alt="" />
+            </div>
+          ))}
     </div>
   );
 };
