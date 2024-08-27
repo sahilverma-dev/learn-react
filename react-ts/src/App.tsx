@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useStore } from "./hooks/useStore";
 import { Video, VideoResponse } from "./interfaces";
 import axios from "axios";
+import { useCounterStore } from "./stores/useCounterStore";
 // import Button from "./componetns/Button";
 
 // type ClickEvent = React.MouseEvent<HTMLButtonElement, MouseEvent>;
@@ -133,92 +134,132 @@ import axios from "axios";
 
 // export default App;
 
+// const App = () => {
+//   const { state, dispatch } = useStore();
+
+//   const [videos, setVideos] = useState<Video[]>([]);
+//   const { user, theme, watchLater } = state;
+
+//   useEffect(() => {
+//     const getData = async () => {
+//       const { data } = await axios<VideoResponse>(
+//         "https://api.freeapi.app/api/v1/public/youtube/videos?page=1&limit=10&query=javascript&sortBy=keep%20one%3A%20mostLiked%20%7C%20mostViewed%20%7C%20latest%20%7C%20oldest"
+//       );
+//       setVideos(data.data.data);
+//     };
+
+//     getData();
+//   }, []);
+
+//   return (
+//     <div>
+//       {user ? user.name : "No user"}
+//       {user ? (
+//         <button
+//           onClick={() => {
+//             dispatch({
+//               type: "LOGOUT",
+//             });
+//           }}
+//         >
+//           Logout
+//         </button>
+//       ) : (
+//         <button
+//           onClick={() => {
+//             dispatch({
+//               type: "LOGIN",
+//               payload: {
+//                 user: {
+//                   name: "Sahil",
+//                 },
+//               },
+//             });
+//           }}
+//         >
+//           Login
+//         </button>
+//       )}
+
+//       {theme}
+
+//       <button
+//         onClick={() => {
+//           dispatch({
+//             type: "TOGGLE_THEME",
+//           });
+//         }}
+//       >
+//         Toggle Theme
+//       </button>
+
+//       {videos.map((video) => (
+//         <div key={video.items.id}>
+//           <button
+//             onClick={() => {
+//               dispatch({
+//                 type: "ADD_TO_WATCH_LATER",
+//                 payload: {
+//                   video,
+//                 },
+//               });
+//             }}
+//           >
+//             Add To Watch Later
+//           </button>
+//           <img src={video.items.snippet.thumbnails.default.url} alt="" />
+//         </div>
+//       ))}
+
+//       <h1>Watch Later</h1>
+
+//       {watchLater.length === 0
+//         ? "no videos"
+//         : watchLater.map((video) => (
+//             <div key={video.items.id}>
+//               <img src={video.items.snippet.thumbnails.default.url} alt="" />
+//             </div>
+//           ))}
+//     </div>
+//   );
+// };
+
+// export default App;
+
+const getData = () => {
+  const data = useCounterStore.getState();
+  return data;
+};
+
+const setData = () => {
+  const data = useCounterStore.setState({ count: 10 });
+  return data;
+};
+
 const App = () => {
-  const { state, dispatch } = useStore();
-
-  const [videos, setVideos] = useState<Video[]>([]);
-  const { user, theme, watchLater } = state;
-
-  useEffect(() => {
-    const getData = async () => {
-      const { data } = await axios<VideoResponse>(
-        "https://api.freeapi.app/api/v1/public/youtube/videos?page=1&limit=10&query=javascript&sortBy=keep%20one%3A%20mostLiked%20%7C%20mostViewed%20%7C%20latest%20%7C%20oldest"
-      );
-      setVideos(data.data.data);
-    };
-
-    getData();
-  }, []);
+  const count = useCounterStore((state) => state.count);
+  const decrease = useCounterStore((state) => state.decrease);
+  const increase = useCounterStore((state) => state.increase);
 
   return (
     <div>
-      {user ? user.name : "No user"}
-      {user ? (
-        <button
-          onClick={() => {
-            dispatch({
-              type: "LOGOUT",
-            });
-          }}
-        >
-          Logout
-        </button>
-      ) : (
-        <button
-          onClick={() => {
-            dispatch({
-              type: "LOGIN",
-              payload: {
-                user: {
-                  name: "Sahil",
-                },
-              },
-            });
-          }}
-        >
-          Login
-        </button>
-      )}
-
-      {theme}
-
+      <button onClick={decrease}>increase</button>
+      {count}
+      <button onClick={increase}>increase</button>
       <button
         onClick={() => {
-          dispatch({
-            type: "TOGGLE_THEME",
-          });
+          console.log(getData());
         }}
       >
-        Toggle Theme
+        get DATa
       </button>
-
-      {videos.map((video) => (
-        <div key={video.items.id}>
-          <button
-            onClick={() => {
-              dispatch({
-                type: "ADD_TO_WATCH_LATER",
-                payload: {
-                  video,
-                },
-              });
-            }}
-          >
-            Add To Watch Later
-          </button>
-          <img src={video.items.snippet.thumbnails.default.url} alt="" />
-        </div>
-      ))}
-
-      <h1>Watch Later</h1>
-
-      {watchLater.length === 0
-        ? "no videos"
-        : watchLater.map((video) => (
-            <div key={video.items.id}>
-              <img src={video.items.snippet.thumbnails.default.url} alt="" />
-            </div>
-          ))}
+      <button
+        onClick={() => {
+          console.log(setData());
+        }}
+      >
+        Set Data
+      </button>
     </div>
   );
 };
