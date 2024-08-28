@@ -5,6 +5,8 @@ import { useStore } from "./hooks/useStore";
 import { Video, VideoResponse } from "./interfaces";
 import axios from "axios";
 import { useCounterStore } from "./stores/useCounterStore";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { api } from "./api";
 // import Button from "./componetns/Button";
 
 // type ClickEvent = React.MouseEvent<HTMLButtonElement, MouseEvent>;
@@ -226,39 +228,153 @@ import { useCounterStore } from "./stores/useCounterStore";
 
 // export default App;
 
-const getData = () => {
-  const data = useCounterStore.getState();
-  return data;
-};
+// const getData = () => {
+//   const data = useCounterStore.getState();
+//   return data;
+// };
 
-const setData = () => {
-  const data = useCounterStore.setState({ count: 10 });
-  return data;
-};
+// const setData = () => {
+//   const data = useCounterStore.setState({ count: 10 });
+//   return data;
+// };
+
+// const App = () => {
+//   const count = useCounterStore((state) => state.count);
+//   const decrease = useCounterStore((state) => state.decrease);
+//   const increase = useCounterStore((state) => state.increase);
+
+//   return (
+//     <div>
+//       <button onClick={decrease}>increase</button>
+//       {count}
+//       <button onClick={increase}>increase</button>
+//       <button
+//         onClick={() => {
+//           console.log(getData());
+//         }}
+//       >
+//         get DATa
+//       </button>
+//       <button
+//         onClick={() => {
+//           console.log(setData());
+//         }}
+//       >
+//         Set Data
+//       </button>
+//     </div>
+//   );
+// };
+
+// export default App;
+
+export interface Post {
+  userId: number;
+  id: number;
+  title: string;
+  body: string;
+}
 
 const App = () => {
-  const count = useCounterStore((state) => state.count);
-  const decrease = useCounterStore((state) => state.decrease);
-  const increase = useCounterStore((state) => state.increase);
+  const queryClient = useQueryClient();
+  // const postsQuery = useQuery({
+  //   queryKey: ["post"],
+  //   queryFn: async () => {
+  //     const { data } = await api<Post[]>("/posts");
+  //     return data;
+  //   },
+  // });
+
+  const [start, setStart] = useState(0);
+  const [limit, setLimit] = useState(5);
+  const {
+    isLoading,
+    refetch,
+    data: posts,
+    isError,
+  } = useQuery({
+    queryKey: ["post", start, limit],
+    queryFn: async () => {
+      const { data } = await api<Post[]>({
+        url: "/posts",
+        params: {
+          _start: start,
+          _limit: limit,
+        },
+        // ?_start=0&_limit=5%20
+      });
+      return data;
+    },
+  });
+
+  const postMutation = useMutation({
+    mutationKey: ["add-post"],
+    mutationFn: async () => {
+      const { data } = await api<Post>({
+        url: "/posts",
+        method: "POST",
+        data: {
+          title: "new_title",
+          body: "new_body",
+          userId: "userid",
+        },
+      });
+
+      return data;
+    },
+    onSuccess: (post) => {
+      // add to our posts
+      queryClient.invalidateQueries({
+        queryKey: ["post", start, limit],
+      });
+      // queryClient.setQueryData(
+      //   post,
+      //   (state) => {
+      //     console.log(state);
+      //   },
+      //   {}
+      // );
+    },
+  });
 
   return (
     <div>
-      <button onClick={decrease}>increase</button>
-      {count}
-      <button onClick={increase}>increase</button>
+      {isLoading && "loading"}
+      {isError && (
+        <div>
+          <button onClick={() => refetch()}>Refetch</button>
+        </div>
+      )}
+      {posts && posts.map((post) => <p key={post.id}>{post.title}</p>)}
+      limit
+      {[5, 20, 50].map((i) => (
+        <button
+          key={i}
+          onClick={() => {
+            setLimit(i);
+          }}
+        >
+          {i}
+        </button>
+      ))}
+      page
+      {Array.from({ length: 10 }).map((_, i) => (
+        <button
+          key={i}
+          onClick={() => {
+            setStart(i);
+          }}
+        >
+          {i}
+        </button>
+      ))}
       <button
+        disabled={postMutation.isPending}
         onClick={() => {
-          console.log(getData());
+          postMutation.mutateAsync();
         }}
       >
-        get DATa
-      </button>
-      <button
-        onClick={() => {
-          console.log(setData());
-        }}
-      >
-        Set Data
+        {postMutation.isPending ? "Pending" : "Mutate"}
       </button>
     </div>
   );
