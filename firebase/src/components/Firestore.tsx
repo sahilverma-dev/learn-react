@@ -55,7 +55,7 @@ const Firestore = () => {
     const colRef = collection(db, "post");
     // jb apko pta ho collection k bare me or doc id pta na
     const newDoc = await addDoc(colRef, {
-      title: "new title",
+      title: `post ${posts.length + 1}`,
     });
     console.log(newDoc);
   };
@@ -91,9 +91,9 @@ const Firestore = () => {
     console.log(newDoc);
   };
 
-  const deleteDocument = async () => {
+  const deleteDocument = async (id: string) => {
     console.log("delete document");
-    const docRef = doc(db, "/post/6qh7glmwzwR3afasdfaBr8soGYc");
+    const docRef = doc(db, `/post/${id}`);
     await deleteDoc(docRef);
   };
 
@@ -102,6 +102,7 @@ const Firestore = () => {
       {posts.map((post) => (
         <div key={post.id}>
           {post?.title} {post.id}{" "}
+          <button onClick={() => deleteDocument(post.id)}>Delete Doc</button>
         </div>
       ))}
       {/* <button onClick={readDocument}>Read Doc</button> */}

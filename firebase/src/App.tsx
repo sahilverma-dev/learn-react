@@ -5,7 +5,8 @@ import { useEffect } from "react";
 // import EmailPassSignUp from "./components/EmailPassSignUp";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase/config";
-import Firestore from "./components/Firestore";
+// import Firestore from "./components/Firestore";
+import CloudStorage from "./components/CloudStorage";
 
 const App = () => {
   useEffect(() => {
@@ -19,7 +20,8 @@ const App = () => {
       {/* <GoogleAuth /> */}
       {/* <EmailPassSignUp /> */}
       {/* <EmailPassSignIn /> */}
-      <Firestore />
+      {/* <Firestore /> */}
+      <CloudStorage />
     </div>
   );
 };
