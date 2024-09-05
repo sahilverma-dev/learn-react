@@ -1,6 +1,8 @@
 import BasicForm from "./components/forms/BasicForm";
+import FormWithRef from "./components/forms/FormWithRef";
 import ReactHookForm from "./components/forms/ReactHookForm";
 import ReactHookFormWithZod from "./components/forms/ReactHookFormWithZod";
+import ShadcnForm from "./components/forms/ShadcnForm";
 import SimpleForm from "./components/forms/SimpleForm";
 import TypeSafeForm from "./components/forms/TypeSafeForm";
 
@@ -11,7 +13,9 @@ const App = () => {
       {/* <BasicForm /> */}
       {/* <TypeSafeForm /> */}
       {/* <ReactHookForm /> */}
-      <ReactHookFormWithZod />
+      {/* <ReactHookFormWithZod /> */}
+      {/* <FormWithRef /> */}
+      <ShadcnForm />
     </div>
   );
 };
